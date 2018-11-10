@@ -28,7 +28,7 @@ namespace VGame.BetCenter
         {
             if (round.Bets.Count==0) return;
             string roundSql = $"insert into {T_GameRound} (id,GameId,BeginTime,EndTime,Result,ResultDesc) values (@id,@GameId,@StartTime,@EndTime,@Result,@ResultDesc)";
-            string sql = $"insert into {T_BetLog} (AccountName,GameId,RoundId,Bet,Pay,BetTime,BillTime,BetContent,Status) values (@Player,@GameId,@RoundId,@Bet,@Pay,@BetTime,@BillTime,@Key,@Status)";
+            string sql = $"insert into {T_BetLog} (AccountName,GameId,RoundId,Bet,Pay,Commission,BetTime,BillTime,BetContent,Status) values (@Player,@GameId,@RoundId,@Bet,@Pay,@Commission,@BetTime,@BillTime,@Key,@Status)";
             using(IDbConnection db = new MySqlConnection(_connectionString))
             {
                 db.Open();
@@ -38,7 +38,7 @@ namespace VGame.BetCenter
                     {
                         await db.ExecuteAsync(roundSql,round,tx);
                         foreach(var p in round.Bets.Values)         
-                            await db.ExecuteAsync(sql,new { Player=p.Player,GameId=round.GameId,RoundId=round.Id,Bet= p.Bet,Pay=p.Pay,BetTime =round.StartTime, BillTime = round.EndTime, Key = p.Key, Status = round.Status },tx);
+                            await db.ExecuteAsync(sql,new { Player=p.Player,GameId=round.GameId,RoundId=round.Id,Bet= p.Bet,Pay=p.Pay,Commission = p.Commisson,BetTime =round.StartTime, BillTime = round.EndTime, Key = p.Key, Status = round.Status },tx);
                         tx.Commit();
                     }
                     catch(Exception ex)
